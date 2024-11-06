@@ -1,0 +1,32 @@
+// possiamo anche dare dei valori di default
+// $parametro: valoreDefault
+@mixin myBox($boxBorderSize: 1px, $boxColor: rgb(102, 102, 102), $radius: 10px) {
+  width: 200px;
+  height: 200px;
+  margin-block: 2rem;
+  display: inline-block;
+  vertical-align: bottom;
+  border-radius: $radius;
+  border: $boxBorderSize solid scale-color($boxColor, $lightness: -40%);
+  color: black;
+  background-color: $boxColor;
+  box-shadow: 0 3px 30px scale-color($boxColor, $lightness: -30%, $alpha: -20%);
+}
+
+@mixin dynamicSquare($size, $propertyName, $propertyValue) {
+  width: $size;
+  height: $size;
+  margin-block: 2rem;
+  display: inline-block;
+  vertical-align: bottom;
+  border: 2px solid black;
+  // INTERPOLAZIONE DI VALORE #{}
+  // la conclusione della proprietà background- dipenderà dal valore del parametro $propertyName in quel momento
+  background-#{$propertyName}: $propertyValue;
+
+  @if ($propertyName == "image") {
+    background-size: cover;
+  } @else {
+    border-radius: 20px;
+  }
+}

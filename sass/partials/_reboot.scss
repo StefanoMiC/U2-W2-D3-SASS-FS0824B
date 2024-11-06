@@ -1,0 +1,35 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-sans-serif;
+  margin: $size-0;
+  padding: $size-0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  // proprietà composte
+  font: {
+    family: $font-serif;
+    weight: 600;
+  }
+  margin-top: $size-0;
+}
+
+p {
+  margin: $size-0;
+}

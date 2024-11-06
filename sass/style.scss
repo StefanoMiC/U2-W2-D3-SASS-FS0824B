@@ -1,0 +1,233 @@
+// 7) PARTIALS - i partials sono dei file che non costituiscono un punto di ingresso per la compilazione,
+// ma possono essere riuniti a formare un unico file CSS
+
+// devono avere un _ nel nome in modo che possano essere riconosciuti come partials
+
+// devono rispettare il giusto ordine per far sì che eventuali variabili riferite all'interno di un partials
+// siano già state importate prima del loro utilizzo
+
+@import "./partials/variables";
+// 1) variabili SCSS
+// ci permettono di creare valori che utilizzeremo più volte in punti differenti del nostro codice.
+// all'occorrenza potranno essere cambiati in un unico punto,
+// e questo cambiamento potrà avere un effetto simultaneo su tutti gli elementi che lo utilizzavano
+@import "./partials/reboot";
+@import "./partials/placeholders";
+@import "./partials/mixins";
+
+// regole vuote non vengono compilate nella versione finale
+// section {
+// }
+
+h1 {
+  font-size: 60px;
+}
+
+// main section {
+//   padding-block: 3rem;
+// }
+
+// main section ul {
+//   padding-inline-start: unset;
+// }
+
+// main section ul li {
+//   display: inline-block;
+// }
+
+// 2) NESTING CSS - Selettori annidati
+
+main {
+  section {
+    padding-block: 1rem;
+
+    // NESTED MEDIA QUERIES
+    @media screen and (min-width: 768px) {
+      padding-block: 3rem;
+    }
+    @media screen and (min-width: 992px) {
+      padding-block: 6rem;
+    }
+
+    ul {
+      background-color: antiquewhite;
+      li {
+        &::marker {
+          content: "📌";
+        }
+      }
+
+      &:hover {
+        background-color: scale-color(antiquewhite, $lightness: -20%, $alpha: -30%);
+      }
+    }
+    // 3) PARENT SELECTOR & - riprende il selettore in cui è inserito e tutti i selettori più esterni
+
+    &:nth-of-type(2) {
+      background-color: $main-color;
+      padding-block: 1.5rem;
+    }
+  }
+
+  article {
+    padding: $size-2;
+
+    &:hover {
+      background-color: $secondary-color;
+    }
+  }
+}
+
+// esempio di parent selctor per comporre nomi di classi più articolate
+.header {
+  &__nav {
+    &__list {
+      background-color: $main-color;
+    }
+    &__button {
+      border: 2px solid black;
+      &--primary {
+        background-color: lightblue;
+      }
+      &--secondary {
+        background-color: adjust-hue(lightblue, 45deg);
+      }
+      &--tertiary {
+        background-color: adjust-hue(lightblue, 90deg);
+      }
+    }
+  }
+}
+
+.btn {
+  background-color: black;
+  color: white;
+  padding: $size-1 $size-3;
+  font: {
+    size: 1.2rem;
+    family: inherit;
+    weight: 500;
+  }
+  border: 1px solid rgb(42, 42, 42);
+  border-radius: 6px;
+}
+
+// 4) EXTEND (@extend) - siamo in grado di riprendere tutto un blocco precedente di una classe / id / elemento
+.btn-alt {
+  @extend .btn;
+  background-color: aqua;
+  color: black;
+}
+
+// 5) PLACEHOLDER (%) - serve a creare dei blocchi di regole CSS che applicheranno le loro regole solo quando utilizzati.
+// Se mai applicati queste regole CSS non arriveranno mai nel CSS generato.
+// I placeholder da soli non hanno una presenza nel file CSS. Devono venire applicati.
+
+// per definizione vedi file _placeholders.scss
+
+.btn-basic {
+  @extend %reset-btn, %reset-font;
+}
+
+input,
+textarea,
+select {
+  @extend %reset-font;
+}
+
+// 6) MIXINS (@mixin) - un blocco di codice CSS dinamico, può generarsi anche con valori dati da parametri
+// per definizione vedi file _mixins.scss
+
+.box-1 {
+  @include myBox(2px, $secondary-color);
+}
+
+.box-2 {
+  @include myBox(4px, $main-color, 20px);
+}
+
+.box-3 {
+  @include myBox(4px);
+}
+
+.box-4 {
+  @include myBox($boxColor: rgb(215, 65, 0));
+}
+
+.box-5 {
+  @include dynamicSquare(200px, "color", palegoldenrod);
+}
+
+.box-6 {
+  @include dynamicSquare(200px, "image", url(https://plus.unsplash.com/premium_photo-1674593231084-d8b27596b134?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D));
+}
+
+// 8) CICLI
+
+// CICLO FOR
+// @for $contatore from <start> to <end> ==> dove <start> to <end> indica con un "to" il valore <end> ESCLUSO, es. con 0 to 5 equivale a 0 < 5
+// @for $contatore from <start> through <end> ==> dove <start> to <end> indica con un "through" il valore <end> INCLUSO, es. con 0 to 5 equivale a 0 <= 5
+
+@for $i from 1 through 5 {
+  .custom-padding-#{$i} {
+    padding: $i * 10px;
+  }
+}
+
+// CICLO EACH
+// red, green, blue, yellow, purple, orange
+
+// @each $var in [list] {
+//  CSS TO CREATE
+// }
+
+// LIST - lista di valori semplici: colori, misure, url(), ecc...
+// $colorKeys: red, green, blue, yellow, purple, orange;
+
+// @each $color in $colorKeys {
+//   .square-#{$color} {
+//     width: 100px;
+//     height: 100px;
+//     background-color: $color;
+//   }
+// }
+
+// MAP - lista con coppie chiave-valore
+$colorMap: (
+  red: #ba1515,
+  green: #008000,
+  blue: #0000ff,
+  yellow: #ffff00,
+  purple: #800080,
+  orange: #ffa500
+);
+
+@each $key, $value in $colorMap {
+  .square-#{$key} {
+    width: 100px;
+    height: 100px;
+    background-color: $value;
+  }
+}
+
+$sizes: (
+  xs: 10px,
+  sm: 20px,
+  md: 30px,
+  lg: 60px,
+  xl: 120px,
+  xxl: 240px
+);
+
+@each $key, $value in $sizes {
+  .padding-#{$key} {
+    padding: $value;
+
+    &-inline {
+      padding-inline: $value;
+    }
+    &-block {
+      padding-block: $value;
+    }
+  }
+}

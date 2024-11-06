@@ -1,0 +1,243 @@
+// 1) variabili SCSS
+// ci permettono di creare valori che utilizzeremo più volte in punti differenti del nostro codice.
+// all'occorrenza potranno essere cambiati in un unico punto,
+// e questo cambiamento potrà avere un effetto simultaneo su tutti gli elementi che lo utilizzavano
+$size-0: 0;
+$size-1: 0.25rem;
+$size-2: 0.5rem;
+$size-3: 1rem;
+$size-4: 1.5rem;
+$size-5: 3rem;
+
+$main-color: rgb(189, 108, 189);
+$secondary-color: rgb(86, 81, 189);
+
+$font-serif: Georgia, "Times New Roman", Times, serif;
+$font-sans-serif: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-sans-serif;
+  margin: $size-0;
+  padding: $size-0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  // proprietà composte
+  font: {
+    family: $font-serif;
+    weight: 600;
+  }
+  margin-top: $size-0;
+}
+
+p {
+  margin: $size-0;
+}
+
+// regole vuote non vengono compilate nella versione finale
+// section {
+// }
+
+h1 {
+  font-size: 60px;
+}
+
+// main section {
+//   padding-block: 3rem;
+// }
+
+// main section ul {
+//   padding-inline-start: unset;
+// }
+
+// main section ul li {
+//   display: inline-block;
+// }
+
+// 2) NESTING CSS - Selettori annidati
+
+main {
+  section {
+    padding-block: 1rem;
+
+    // NESTED MEDIA QUERIES
+    @media screen and (min-width: 768px) {
+      padding-block: 3rem;
+    }
+    @media screen and (min-width: 992px) {
+      padding-block: 6rem;
+    }
+
+    ul {
+      background-color: antiquewhite;
+      li {
+        &::marker {
+          content: "📌";
+        }
+      }
+
+      &:hover {
+        background-color: scale-color(antiquewhite, $lightness: -20%, $alpha: -30%);
+      }
+    }
+    // 3) PARENT SELECTOR & - riprende il selettore in cui è inserito e tutti i selettori più esterni
+
+    &:nth-of-type(2) {
+      background-color: $main-color;
+      padding-block: 1.5rem;
+    }
+  }
+
+  article {
+    padding: $size-2;
+
+    &:hover {
+      background-color: $secondary-color;
+    }
+  }
+}
+
+// esempio di parent selctor per comporre nomi di classi più articolate
+.header {
+  &__nav {
+    &__list {
+      background-color: $main-color;
+    }
+    &__button {
+      border: 2px solid black;
+      &--primary {
+        background-color: lightblue;
+      }
+      &--secondary {
+        background-color: adjust-hue(lightblue, 45deg);
+      }
+      &--tertiary {
+        background-color: adjust-hue(lightblue, 90deg);
+      }
+    }
+  }
+}
+
+.btn {
+  background-color: black;
+  color: white;
+  padding: $size-1 $size-3;
+  font: {
+    size: 1.2rem;
+    family: inherit;
+    weight: 500;
+  }
+  border: 1px solid rgb(42, 42, 42);
+  border-radius: 6px;
+}
+
+// 4) EXTEND (@extend) - siamo in grado di riprendere tutto un blocco precedente di una classe / id / elemento
+.btn-alt {
+  @extend .btn;
+  background-color: aqua;
+  color: black;
+}
+
+// 5) PLACEHOLDER (%) - serve a creare dei blocchi di regole CSS che applicheranno le loro regole solo quando utilizzati.
+// Se mai applicati queste regole CSS non arriveranno mai nel CSS generato.
+// I placeholder da soli non hanno una presenza nel file CSS. Devono venire applicati.
+
+%reset-btn {
+  border: none;
+  background-color: transparent;
+}
+
+%reset-font {
+  font: {
+    family: inherit;
+    weight: inherit;
+    size: inherit;
+  }
+  color: inherit;
+}
+
+.btn-basic {
+  @extend %reset-btn, %reset-font;
+}
+
+input,
+textarea,
+select {
+  @extend %reset-font;
+}
+
+// 6) MIXINS (@mixin) - un blocco di codice CSS dinamico, può generarsi anche con valori dati da parametri
+
+// possiamo anche dare dei valori di default
+// $parametro: valoreDefault
+@mixin myBox($boxBorderSize: 1px, $boxColor: rgb(102, 102, 102), $radius: 10px) {
+  width: 200px;
+  height: 200px;
+  margin-block: 2rem;
+  display: inline-block;
+  vertical-align: bottom;
+  border-radius: $radius;
+  border: $boxBorderSize solid scale-color($boxColor, $lightness: -40%);
+  color: black;
+  background-color: $boxColor;
+  box-shadow: 0 3px 30px scale-color($boxColor, $lightness: -30%, $alpha: 0%);
+}
+
+@mixin dynamicSquare($size, $propertyName, $propertyValue) {
+  width: $size;
+  height: $size;
+  margin-block: 2rem;
+  display: inline-block;
+  vertical-align: bottom;
+  border: 2px solid black;
+  // INTERPOLAZIONE DI VALORE #{}
+  // la conclusione della proprietà background- dipenderà dal valore del parametro $propertyName in quel momento
+  background-#{$propertyName}: $propertyValue;
+
+  @if ($propertyName == "image") {
+    background-size: cover;
+  } @else {
+    border-radius: 20px;
+  }
+}
+
+.box-1 {
+  @include myBox(2px, $secondary-color);
+}
+
+.box-2 {
+  @include myBox(4px, $main-color, 20px);
+}
+
+.box-3 {
+  @include myBox(4px);
+}
+
+.box-4 {
+  @include myBox($boxColor: rgb(215, 65, 0));
+}
+
+.box-5 {
+  @include dynamicSquare(200px, "color", palegoldenrod);
+}
+
+.box-6 {
+  @include dynamicSquare(200px, "image", url(https://plus.unsplash.com/premium_photo-1674593231084-d8b27596b134?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D));
+}
